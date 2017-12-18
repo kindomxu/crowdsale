@@ -1,0 +1,19 @@
+{
+  "name": "fair-game-ico-truffle-infura",
+  "description": "fair game ico truffle project with infura supports",
+  "version": "1.0.0",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
+    "truffle-hdwallet-provider": "0.0.3"
+  }
+}
