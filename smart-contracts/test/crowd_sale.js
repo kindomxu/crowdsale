@@ -119,7 +119,8 @@ contract('FairGameCrowdSale', function (accounts) {
     it("Test Purchase", function () {
 
         var ethPerSpent = 5;              // 5 ETH
-        var tokenPerIssue = 5 * 12000;  //Token Units
+        var tokenPerIssue = 5 * 10000;  //Token Units
+        var bonusTokenPerBuy = 5 * 2000;    // 2000 for 10000
 
         var amountGoal;
         var amountRaised;
@@ -130,7 +131,9 @@ contract('FairGameCrowdSale', function (accounts) {
 
         var buyerTokenBalance;
 
-        
+        var lockedTokens = [0, 0, 0];
+
+
         function initDataBeforeBuyTokens() {
 
             // amountRaised
@@ -159,12 +162,31 @@ contract('FairGameCrowdSale', function (accounts) {
                 //Buyer Token Balance
                 return token.balanceOf(account2);
             }).then(function (balance) {
+                console.log("Account2 Token Balance:", web3.fromWei(balance.toNumber(), "ether"));
                 buyerTokenBalance = balance;
+            }).then(function () {
+
+                // getLockedToken - 0
+                return ico.getLockedToken(account2, 0);
+            }).then(function (amount) {
+                lockedTokens[0] = amount;
+            }).then(function () {
+
+                // getLockedToken - 1
+                return ico.getLockedToken(account2, 1);
+            }).then(function (amount) {
+                lockedTokens[1] = amount;
+            }).then(function () {
+
+                // getLockedToken - 2
+                return ico.getLockedToken(account2, 2);
+            }).then(function (amount) {
+                lockedTokens[2] = amount;
             }).then(function () {
 
             });
         }
-        
+
 
         function checkDataAfterBuyTokens() {
 
@@ -190,6 +212,25 @@ contract('FairGameCrowdSale', function (accounts) {
                 assert.equal(web3.fromWei(data[0].minus(buyerSpentEth).toNumber(), "ether"), ethPerSpent, 'buyerSpentEth error');
                 assert.equal(web3.fromWei(data[1].minus(buyerTakenToken).toNumber(), "ether"), tokenPerIssue, 'buyerTakenToken error');
             }).then(function () {
+
+                // Check Locked Token - 0
+                return ico.getLockedToken(account2, 0);
+            }).then(function (amount) {
+                assert.equal(web3.fromWei(amount.minus(lockedTokens[0]).toNumber(), "ether"), bonusTokenPerBuy * 33 / 100);
+            }).then(function () {
+
+                // Check Locked Token - 1
+                return ico.getLockedToken(account2, 1);
+            }).then(function (amount) {
+                assert.equal(web3.fromWei(amount.minus(lockedTokens[1]).toNumber(), "ether"), bonusTokenPerBuy * 33 / 100);
+            }).then(function () {
+
+                // Check Locked Token - 2
+                return ico.getLockedToken(account2, 2);
+            }).then(function (amount) {
+                assert.equal(web3.fromWei(amount.minus(lockedTokens[2]).toNumber(), "ether"), bonusTokenPerBuy * 34 / 100);
+            }).then(function () {
+
 
                 //Buyer Token Balance
                 return token.balanceOf(account2);
