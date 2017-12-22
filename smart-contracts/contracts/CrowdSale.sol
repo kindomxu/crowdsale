@@ -33,22 +33,28 @@ contract CrowdSale is Ownable {
     // Stages Info
     struct Stage {
         uint duration;      // Duration in second of current stage
-        uint bonusRate;     // 100 = 100%
+        uint rate;          // 100 = 100%
     }
-    Stage[] public stages;
+    Stage[] public icoStages;
+    Stage[] public lockStages;
+
 
     // Purchaser Info
     struct PurchaserInfo {
         uint amountEtherSpent;
         uint amountTokenTaken;
+        uint[] lockedToken;
     }
     mapping(address => PurchaserInfo) public purchasers;
 
+    address[] public purchaserList;
+
 
     // ----- Events -----
-    event TokenPurchase(address purchaser, uint value, uint amountTokens);
+    event TokenPurchase(address purchaser, uint value, uint buyTokens, uint bonusTokens);
     event GoalReached(uint totalAmountRaised, uint totalTokenIssued);
     event FundingWithdrawn(address beneficiaryAddress, uint value);
+    event UnlockToken(address purchaser, uint amountUnlockedTokens);
 
 
     // ----- Modifiers -----
@@ -85,6 +91,24 @@ contract CrowdSale is Ownable {
         return token;
     }
 
+    function getLockedToken(address _purchaser, uint stageIdx) public view returns(uint) {
+        if(stageIdx >= purchasers[_purchaser].lockedToken.length) {
+            return 0;
+        }
+        return purchasers[_purchaser].lockedToken[stageIdx];
+    }
+
+    function canTokenUnlocked(uint stageIndex) public view returns(bool) {
+        if(0 <= stageIndex && stageIndex < lockStages.length){
+            uint stageEndTime = endTime;
+            for(uint i = 0; i <= stageIndex; i++) {
+                stageEndTime += lockStages[i].duration;
+            }//for
+            return now > stageEndTime;
+        }
+        return false;
+    }
+
     function isStarted() public view returns(bool) {
         return 0 < startTime && startTime <= now;
     }
@@ -100,8 +124,8 @@ contract CrowdSale is Ownable {
     function getCurrentStage() public view returns(int) {
         int stageIdx = -1;
         uint stageEndTime = startTime;
-        for(uint i = 0; i < stages.length; i++) {
-            stageEndTime += stages[i].duration;
+        for(uint i = 0; i < icoStages.length; i++) {
+            stageEndTime += icoStages[i].duration;
             if (now <= stageEndTime) {
                 stageIdx = int(i);
                 break;
@@ -116,6 +140,17 @@ contract CrowdSale is Ownable {
         return endTime - now;
     }
 
+    function _addPurchaser(address purchaser) internal {
+        require(purchaser != address(0));
+
+        for (uint i = 0; i < purchaserList.length; i++) {
+            if (purchaser == purchaserList[i]){
+                return;
+            }
+        }
+        purchaserList.push(purchaser);
+    }
+
     function start(uint fundingGoalInEther) public onlyOwner {
         require(!isStarted());
         require(fundingGoalInEther > 0);
@@ -124,8 +159,8 @@ contract CrowdSale is Ownable {
         startTime = now;
 
         uint duration = 0;
-        for(uint i = 0; i < stages.length; i++){
-            duration += stages[i].duration;
+        for(uint i = 0; i < icoStages.length; i++){
+            duration += icoStages[i].duration;
         }
 
         endTime = startTime + duration;
@@ -135,32 +170,71 @@ contract CrowdSale is Ownable {
         require(msg.value > 0);
 
         uint amount = msg.value;
-        uint tokenCount = _getTokenCount(amount);
+        var (buyTokenCount, bonusTokenCount) = _getTokenCount(amount);
 
         PurchaserInfo storage pi = purchasers[msg.sender];
         pi.amountEtherSpent += amount;
-        pi.amountTokenTaken += tokenCount;
+        pi.amountTokenTaken += buyTokenCount;
+
+        if (pi.lockedToken.length == 0) {
+            pi.lockedToken = new uint[](lockStages.length);
+        }
+
+        for(uint i = 0; i < lockStages.length; i++) {
+            Stage storage stage = lockStages[i];
+            pi.lockedToken[i] += stage.rate * bonusTokenCount / 100;
+        }
+
 
         amountRaised += amount;
-        amountTokenIssued += tokenCount;
+        amountTokenIssued += buyTokenCount;
 
-        token.transferFrom(tokenHolder, msg.sender, tokenCount);
-        TokenPurchase(msg.sender, amount, tokenCount);
+        token.transferFrom(tokenHolder, msg.sender, buyTokenCount);
+        TokenPurchase(msg.sender, amount, buyTokenCount, bonusTokenCount);
+
+        _addPurchaser(msg.sender);
+
+        if(isReachedGoal()){
+            endTime = now;
+        }
     }
 
-    function _getTokenCount(uint amountInWei) internal view returns(uint) {
-        uint buyTokenCount = amountInWei * rate;
+    function _getTokenCount(uint amountInWei) internal view returns(uint buyTokenCount, uint bonusTokenCount) {
+        buyTokenCount = amountInWei * rate;
 
         int stageIdx = getCurrentStage();
-        assert(stageIdx >= 0 && uint(stageIdx) < stages.length);
-        uint bonus = buyTokenCount * stages[uint(stageIdx)].bonusRate / 100;
-
-        return buyTokenCount + bonus;
+        assert(stageIdx >= 0 && uint(stageIdx) < icoStages.length);
+        bonusTokenCount = buyTokenCount * icoStages[uint(stageIdx)].rate / 100;
     }
 
-    function safeWithdrawal() public afterEnded onlyOwner {
+
+    function safeWithdrawal() public onlyOwner {
         require(beneficiary != address(0));
         beneficiary.transfer(amountRaised);
         FundingWithdrawn(beneficiary, amountRaised);
     }
+
+    function unlockBonusTokens(uint stageIndex, uint purchaserStartIdx, uint purchaserEndIdx) public afterEnded onlyOwner {
+        require(0 <= purchaserStartIdx && purchaserStartIdx < purchaserEndIdx && purchaserEndIdx <= purchaserList.length);
+        require(canTokenUnlocked(stageIndex));
+
+        for (uint j = purchaserStartIdx; j < purchaserEndIdx; j++) {
+            address purchaser = purchaserList[j];
+            if(purchaser != address(0)){
+                PurchaserInfo storage pi = purchasers[purchaser];
+                uint unlockedToken = pi.lockedToken[stageIndex];
+                if (unlockedToken > 0) {
+                    pi.lockedToken[stageIndex] = 0;
+                    pi.amountTokenTaken += unlockedToken;
+
+                    amountTokenIssued += unlockedToken;
+
+                    token.transferFrom(tokenHolder, purchaser, unlockedToken);
+                    UnlockToken(purchaser, unlockedToken);
+                }
+            }
+        }//for
+
+    }
+
 }

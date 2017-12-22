@@ -12,7 +12,7 @@ contract ERC20 {
     function transfer(address to, uint256 value) public returns (bool);
 
     function allowance(address owner, address spender) public view returns (uint256);
-    function transferFrom(address from, address to, uint256 value) public returns (bool);
     function approve(address spender, uint256 value) public returns (bool);
+    function transferFrom(address from, address to, uint256 value) public returns (bool);
 
 }

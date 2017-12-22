@@ -1,4 +1,4 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.16;
 
 import "./CrowdSale.sol";
 
@@ -10,10 +10,17 @@ contract FairGameCrowdSale is CrowdSale {
     }
 
     function _initStages() internal {
-        delete stages;
+        delete icoStages;
 
-        stages.push(Stage({bonusRate: 20, duration: 1 weeks}));
-        stages.push(Stage({bonusRate: 10, duration: 1 weeks}));
-        stages.push(Stage({bonusRate: 0, duration: 1 weeks}));
+        icoStages.push(Stage({rate: 20, duration: 1 weeks}));
+        icoStages.push(Stage({rate: 10, duration: 1 weeks}));
+        icoStages.push(Stage({rate: 0,  duration: 1 weeks}));
+
+
+        delete lockStages;
+
+        lockStages.push(Stage({rate: 33, duration: 30 days}));
+        lockStages.push(Stage({rate: 33, duration: 30 days}));
+        lockStages.push(Stage({rate: 34, duration: 30 days}));
     }
 }

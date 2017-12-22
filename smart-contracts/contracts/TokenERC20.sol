@@ -3,7 +3,7 @@ pragma solidity ^0.4.16;
 import "./ERC20.sol";
 
 
-interface tokenRecipient {
+interface TokenRecipient {
     function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public;
 }
 
@@ -16,18 +16,18 @@ contract TokenERC20 is ERC20 {
     uint8  public decimals = 18;
     // 18 decimals is the strongly suggested default, avoid changing it
 
-    // This creates an array with all balances
-    mapping (address => uint256) public balances;
-    mapping (address => mapping (address => uint256)) public allowances;
+    // Balances
+    mapping (address => uint256) balances;
+    // Allowances
+    mapping (address => mapping (address => uint256)) allowances;
 
 
+    // ----- Events -----
     event Burn(address indexed from, uint256 value);
 
 
     /**
      * Constructor function
-     *
-     * Initializes contract with initial supply tokens to the creator of the contract
      */
     function TokenERC20(uint256 _initialSupply, string _tokenName, string _tokenSymbol, uint8 _decimals) public {
         name = _tokenName;                                   // Set the name for display purposes
@@ -90,7 +90,7 @@ contract TokenERC20 is ERC20 {
      * @param _to The address of the recipient
      * @param _value the amount to send
      */
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
+    function transferFrom(address _from, address _to, uint256 _value) public returns(bool) {
         require(_value <= allowances[_from][msg.sender]);     // Check allowance
         allowances[_from][msg.sender] -= _value;
         return _transfer(_from, _to, _value);
@@ -104,7 +104,7 @@ contract TokenERC20 is ERC20 {
      * @param _spender The address authorized to spend
      * @param _value the max amount they can spend
      */
-    function approve(address _spender, uint256 _value) public returns (bool success) {
+    function approve(address _spender, uint256 _value) public returns(bool) {
         allowances[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
@@ -119,12 +119,13 @@ contract TokenERC20 is ERC20 {
      * @param _value the max amount they can spend
      * @param _extraData some extra information to send to the approved contract
      */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns(bool) {
         if (approve(_spender, _value)) {
-            tokenRecipient spender = tokenRecipient(_spender);
+            TokenRecipient spender = TokenRecipient(_spender);
             spender.receiveApproval(msg.sender, _value, this, _extraData);
             return true;
         }
+        return false;
     }
 
     /**
@@ -134,7 +135,7 @@ contract TokenERC20 is ERC20 {
      *
      * @param _value the amount of money to burn
      */
-    function burn(uint256 _value) public returns (bool success) {
+    function burn(uint256 _value) public returns(bool) {
         require(balances[msg.sender] >= _value);   // Check if the sender has enough
         balances[msg.sender] -= _value;            // Subtract from the sender
         totalSupply -= _value;                      // Updates totalSupply
@@ -150,7 +151,7 @@ contract TokenERC20 is ERC20 {
      * @param _from the address of the sender
      * @param _value the amount of money to burn
      */
-    function burnFrom(address _from, uint256 _value) public returns (bool success) {
+    function burnFrom(address _from, uint256 _value) public returns(bool) {
         require(balances[_from] >= _value);                // Check if the targeted balance is enough
         require(_value <= allowances[_from][msg.sender]);    // Check allowance
         balances[_from] -= _value;                         // Subtract from the targeted balance
