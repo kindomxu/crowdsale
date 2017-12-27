@@ -143,11 +143,11 @@ contract CrowdSale is Ownable {
     function _addPurchaser(address purchaser) internal {
         require(purchaser != address(0));
 
-        for (uint i = 0; i < purchaserList.length; i++) {
-            if (purchaser == purchaserList[i]){
-                return;
-            }
-        }
+//        for (uint i = 0; i < purchaserList.length; i++) {
+//            if (purchaser == purchaserList[i]){
+//                return;
+//            }
+//        }
         purchaserList.push(purchaser);
     }
 
@@ -164,6 +164,11 @@ contract CrowdSale is Ownable {
         }
 
         endTime = startTime + duration;
+    }
+
+    function stop() public onlyOwner {
+        require(isStarted());
+        endTime = now;
     }
 
     function () payable public onlyOpenTime {

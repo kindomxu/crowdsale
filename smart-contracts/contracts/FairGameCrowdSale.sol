@@ -12,9 +12,9 @@ contract FairGameCrowdSale is CrowdSale {
     function _initStages() internal {
         delete icoStages;
 
-        icoStages.push(Stage({rate: 20, duration: 1 weeks}));
-        icoStages.push(Stage({rate: 10, duration: 1 weeks}));
-        icoStages.push(Stage({rate: 0,  duration: 1 weeks}));
+        icoStages.push(Stage({rate: 20, duration: 1 days}));
+        icoStages.push(Stage({rate: 10, duration: 1 days}));
+        icoStages.push(Stage({rate: 0,  duration: 1 days}));
 
 
         delete lockStages;

@@ -366,7 +366,7 @@
       "absolutePath": "/E/DevelopSpace/Ethereum/Fair.Game/smart-contracts/ICOTruffleProj/contracts/FairToken.sol",
       "exportedSymbols": {
         "FairToken": [
-          934
+          928
         ]
       }
     },
@@ -380,41 +380,41 @@
             ".16"
           ]
         },
-        "id": 920,
+        "id": 914,
         "name": "PragmaDirective",
         "src": "0:24:3"
       },
       {
         "attributes": {
-          "SourceUnit": 1568,
+          "SourceUnit": 1562,
           "absolutePath": "/E/DevelopSpace/Ethereum/Fair.Game/smart-contracts/ICOTruffleProj/contracts/TokenERC20.sol",
           "file": "./TokenERC20.sol",
-          "scope": 935,
+          "scope": 929,
           "symbolAliases": [
             null
           ],
           "unitAlias": ""
         },
-        "id": 921,
+        "id": 915,
         "name": "ImportDirective",
         "src": "28:26:3"
       },
       {
         "attributes": {
           "contractDependencies": [
-            832,
-            1567
+            826,
+            1561
           ],
           "contractKind": "contract",
           "documentation": null,
           "fullyImplemented": true,
           "linearizedBaseContracts": [
-            934,
-            1567,
-            832
+            928,
+            1561,
+            826
           ],
           "name": "FairToken",
-          "scope": 935
+          "scope": 929
         },
         "children": [
           {
@@ -428,15 +428,15 @@
                 "attributes": {
                   "contractScope": null,
                   "name": "TokenERC20",
-                  "referencedDeclaration": 1567,
+                  "referencedDeclaration": 1561,
                   "type": "contract TokenERC20"
                 },
-                "id": 922,
+                "id": 916,
                 "name": "UserDefinedTypeName",
                 "src": "82:10:3"
               }
             ],
-            "id": 923,
+            "id": 917,
             "name": "InheritanceSpecifier",
             "src": "82:10:3"
           },
@@ -447,7 +447,7 @@
               "isConstructor": true,
               "name": "FairToken",
               "payable": false,
-              "scope": 934,
+              "scope": 928,
               "stateMutability": "nonpayable",
               "superFunction": null,
               "visibility": "public"
@@ -460,7 +460,7 @@
                   ]
                 },
                 "children": [],
-                "id": 924,
+                "id": 918,
                 "name": "ParameterList",
                 "src": "120:2:3"
               },
@@ -471,7 +471,7 @@
                   ]
                 },
                 "children": [],
-                "id": 931,
+                "id": 925,
                 "name": "ParameterList",
                 "src": "179:0:3"
               },
@@ -483,11 +483,11 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 1567,
+                      "referencedDeclaration": 1561,
                       "type": "type(contract TokenERC20)",
                       "value": "TokenERC20"
                     },
-                    "id": 925,
+                    "id": 919,
                     "name": "Identifier",
                     "src": "123:10:3"
                   },
@@ -504,7 +504,7 @@
                       "type": "int_const 1200000000",
                       "value": "1200000000"
                     },
-                    "id": 926,
+                    "id": 920,
                     "name": "Literal",
                     "src": "134:10:3"
                   },
@@ -521,7 +521,7 @@
                       "type": "literal_string \"Fair Token\"",
                       "value": "Fair Token"
                     },
-                    "id": 927,
+                    "id": 921,
                     "name": "Literal",
                     "src": "146:12:3"
                   },
@@ -538,7 +538,7 @@
                       "type": "literal_string \"FAIR\"",
                       "value": "FAIR"
                     },
-                    "id": 928,
+                    "id": 922,
                     "name": "Literal",
                     "src": "160:6:3"
                   },
@@ -555,12 +555,12 @@
                       "type": "int_const 18",
                       "value": "18"
                     },
-                    "id": 929,
+                    "id": 923,
                     "name": "Literal",
                     "src": "168:2:3"
                   }
                 ],
-                "id": 930,
+                "id": 924,
                 "name": "ModifierInvocation",
                 "src": "123:48:3"
               },
@@ -571,22 +571,22 @@
                   ]
                 },
                 "children": [],
-                "id": 932,
+                "id": 926,
                 "name": "Block",
                 "src": "179:10:3"
               }
             ],
-            "id": 933,
+            "id": 927,
             "name": "FunctionDefinition",
             "src": "102:87:3"
           }
         ],
-        "id": 934,
+        "id": 928,
         "name": "ContractDefinition",
         "src": "60:132:3"
       }
     ],
-    "id": 935,
+    "id": 929,
     "name": "SourceUnit",
     "src": "0:196:3"
   },
@@ -594,7 +594,18 @@
     "name": "solc",
     "version": "0.4.18+commit.9cf6e910.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "1": {
+      "events": {},
+      "links": {},
+      "address": "0x9b20dabcec77f6289113e61893f7beefaeb1990a"
+    },
+    "3": {
+      "events": {},
+      "links": {},
+      "address": "0x81ccefbd980208b3111293d981bfb44e7bc47835"
+    }
+  },
   "schemaVersion": "1.0.1",
-  "updatedAt": "2017-12-22T03:36:48.972Z"
+  "updatedAt": "2017-12-27T10:38:44.599Z"
 }
